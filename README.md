@@ -1,8 +1,28 @@
 # Telegram OTP Verification Service
 
+[![CI](https://github.com/Abdulaziz1224/telegram-otp-service/actions/workflows/ci.yml/badge.svg)](https://github.com/Abdulaziz1224/telegram-otp-service/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 This is a Node.js service that provides an API for third-party services to authenticate users via Telegram by verifying their phone numbers.
 
 ## Flow
+
+```mermaid
+sequenceDiagram
+    participant App as Third-party app
+    participant API as OTP Service
+    participant TG as Telegram bot
+    participant User
+
+    App->>API: POST /api/requests { phoneNumber }
+    API-->>App: { token, url: t.me/bot?start=token }
+    App->>User: show Telegram link
+    User->>TG: /start token
+    TG->>User: request contact
+    User->>TG: share contact
+    TG->>API: verify number matches
+    App->>API: GET /api/requests/:token
+    API-->>App: { verified: true, telegramUserId }
+```
 
 1. A third-party service sends a request to this API with the user's phone number.
 2. This API generates a one-time token and returns a Telegram bot link (e.g., `https://t.me/your_bot?start=token`).
